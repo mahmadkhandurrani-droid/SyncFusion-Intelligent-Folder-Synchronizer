@@ -1,0 +1,26 @@
+import pytest
+
+from core.scanner import FolderScanner
+
+
+@pytest.mark.parametrize(
+    "filename",
+    [
+        "one.txt",
+        "two.pdf",
+        "three.jpg"
+    ]
+)
+def test_scan(tmp_path, filename):
+
+    folder = tmp_path / "source"
+
+    folder.mkdir()
+
+    (folder / filename).write_text("data")
+
+    scanner = FolderScanner(folder)
+
+    files = scanner.scan()
+
+    assert len(files) == 1
