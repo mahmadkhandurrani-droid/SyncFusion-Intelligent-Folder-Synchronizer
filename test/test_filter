@@ -1,0 +1,11 @@
+from core.filters import FileFilter
+
+
+def test_filter():
+
+    file_filter = FileFilter(
+        include_pattern=r".*\.txt$"
+    )
+
+    assert file_filter.match("notes.txt")
+    assert not file_filter.match("photo.jpg")
