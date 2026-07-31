@@ -1,0 +1,46 @@
+"""
+Regular expression file filtering.
+"""
+
+import re
+from pathlib import Path
+
+
+class FileFilter:
+
+    def __init__(
+        self,
+        include_pattern=".*",
+        exclude_pattern=""
+    ):
+
+        self.include_pattern = re.compile(include_pattern)
+
+        self.exclude_pattern = (
+            re.compile(exclude_pattern)
+            if exclude_pattern
+            else None
+        )
+
+    def match(self, file):
+
+        filename = Path(file).name
+
+        if not self.include_pattern.search(filename):
+            return False
+
+        if (
+            self.exclude_pattern
+            and self.exclude_pattern.search(filename)
+        ):
+            return False
+
+        return True
+
+    def filter_files(self, files):
+
+        return [
+            file
+            for file in files
+            if self.match(file)
+        ]
