@@ -1,0 +1,21 @@
+import pytest
+
+from core.filters import FileFilter
+
+
+@pytest.mark.parametrize(
+    "filename, expected",
+    [
+        ("notes.txt", True),
+        ("book.txt", True),
+        ("image.jpg", False),
+        ("report.pdf", False),
+    ]
+)
+def test_txt_filter(filename, expected):
+
+    file_filter = FileFilter(
+        include_pattern=r".*\.txt$"
+    )
+
+    assert file_filter.match(filename) == expected
