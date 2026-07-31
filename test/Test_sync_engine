@@ -1,0 +1,14 @@
+from core.logger import setup_logger
+from core.sync_engine import FolderSynchronizer
+
+
+def test_sync(sample_config):
+
+    logger = setup_logger()
+
+    synchronizer = FolderSynchronizer(
+        sample_config,
+        logger
+    )
+
+    synchronizer.run()
