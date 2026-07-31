@@ -1,0 +1,9 @@
+{
+    "source": "source",
+    "destination": "destination",
+    "log_file": "logs/app.log",
+    "include_pattern": ".*",
+    "exclude_pattern": "",
+    "delete_extra_files": false,
+    "workers": 4
+}
