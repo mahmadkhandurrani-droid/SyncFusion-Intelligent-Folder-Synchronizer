@@ -1,0 +1,23 @@
+from pathlib import Path
+
+from core.file_operations import FileOperations
+
+
+def test_copy_file(sample_config):
+
+    source = Path(sample_config["source"])
+
+    file = source / "file.txt"
+
+    FileOperations.copy_file(
+        file,
+        source,
+        sample_config["destination"]
+    )
+
+    copied = (
+        Path(sample_config["destination"])
+        / "file.txt"
+    )
+
+    assert copied.exists()
