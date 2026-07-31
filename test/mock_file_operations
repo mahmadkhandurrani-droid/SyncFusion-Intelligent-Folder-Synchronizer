@@ -1,0 +1,25 @@
+from unittest.mock import patch
+
+from core.file_operations import FileOperations
+
+
+@patch("core.file_operations.shutil.copy2")
+def test_copy_called(mock_copy, tmp_path):
+
+    source = tmp_path / "source"
+    destination = tmp_path / "destination"
+
+    source.mkdir()
+    destination.mkdir()
+
+    file = source / "demo.txt"
+
+    file.write_text("Hello")
+
+    FileOperations.copy_file(
+        file,
+        source,
+        destination
+    )
+
+    mock_copy.assert_called_once()
