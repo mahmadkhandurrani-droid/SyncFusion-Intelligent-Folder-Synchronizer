@@ -1,0 +1,24 @@
+from core.scanner import FolderScanner
+from core.comparator import FolderComparator
+
+
+def test_compare(sample_config):
+    source = FolderScanner(
+        sample_config["source"]
+    ).scan()
+
+    destination = FolderScanner(
+        sample_config["destination"]
+    ).scan()
+
+    comparator = FolderComparator()
+
+    new_files, modified, deleted = comparator.compare(
+        source,
+        destination,
+        sample_config["source"],
+        sample_config["destination"]
+    )
+
+    assert len(new_files) == 1
+    assert len(modified) == 0
