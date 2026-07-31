@@ -1,0 +1,22 @@
+import pytest
+
+
+@pytest.fixture
+def sample_config(tmp_path):
+    source = tmp_path / "source"
+    destination = tmp_path / "destination"
+
+    source.mkdir()
+    destination.mkdir()
+
+    (source / "file.txt").write_text("Hello")
+
+    return {
+        "source": str(source),
+        "destination": str(destination),
+        "delete_extra_files": False,
+        "include_pattern": ".*",
+        "exclude_pattern": "",
+        "workers": 4,
+        "log_file": "logs/app.log"
+  }
