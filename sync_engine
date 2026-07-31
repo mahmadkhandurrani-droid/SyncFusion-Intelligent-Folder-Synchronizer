@@ -1,0 +1,81 @@
+"""
+Synchronization engine.
+"""
+
+from concurrent.futures import ThreadPoolExecutor
+
+from core.scanner import FolderScanner
+from core.comparator import FolderComparator
+from core.file_operations import FileOperations
+from core.filters import FileFilter
+from core.report import Report
+
+
+class FolderSynchronizer:
+
+    def __init__(self, config, logger):
+        self.config = config
+        self.logger = logger
+
+        self.report = Report()
+
+    def run(self):
+
+        self.logger.info("Scanning folders...")
+
+        source_files = FolderScanner(
+            self.config["source"]
+        ).scan()
+
+        destination_files = FolderScanner(
+            self.config["destination"]
+        ).scan()
+
+        file_filter = FileFilter(
+            self.config["include_pattern"],
+            self.config["exclude_pattern"]
+        )
+
+        source_files = file_filter.filter_files(source_files)
+
+        comparator = FolderComparator()
+
+        new_files, modified_files, deleted_files = comparator.compare(
+            source_files,
+            destination_files,
+            self.config["source"],
+            self.config["destination"]
+        )
+
+        workers = self.config.get("workers", 4)
+
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+
+            for file in new_files:
+                executor.submit(
+                    FileOperations.copy_file,
+                    file,
+                    self.config["source"],
+                    self.config["destination"]
+                )
+
+            for file in modified_files:
+                executor.submit(
+                    FileOperations.update_file,
+                    file,
+                    self.config["source"],
+                    self.config["destination"]
+                )
+
+        if self.config["delete_extra_files"]:
+
+            for file in deleted_files:
+                FileOperations.delete_file(file)
+
+        self.report.write(
+            len(new_files),
+            len(modified_files),
+            len(deleted_files)
+        )
+
+        self.logger.info("Synchronization completed.")
